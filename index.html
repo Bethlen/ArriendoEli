@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21 departamentos en Recoleta y Patronato</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EEE5;
+    --paper-raised:#FBFAF6;
+    --ink:#20261F;
+    --ink-soft:#5B6459;
+    --brick:#B14A32;
+    --brick-soft:#F1DCD3;
+    --ochre:#C98A26;
+    --ochre-soft:#F3E4C4;
+    --teal:#2C6E63;
+    --teal-soft:#D9E9E2;
+    --line:#DAD4C4;
+    --shadow: 0 1px 0 rgba(32,38,31,0.06);
+    --radius: 3px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    line-height:1.05;
+    margin:0;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  /* ---------- HERO ---------- */
+
+  .hero{
+    padding: clamp(28px, 6vw, 64px) clamp(20px, 6vw, 72px) 0;
+    max-width:1180px;
+    margin:0 auto;
+  }
+
+  .hero-kicker{
+    font-size:15px;
+    color:var(--ink-soft);
+    max-width:34ch;
+    margin-bottom:18px;
+  }
+
+  h1{
+    font-size: clamp(34px, 5.4vw, 62px);
+    max-width:16ch;
+  }
+
+  .hero-sub{
+    margin-top:20px;
+    font-size:clamp(16px,2vw,19px);
+    color:var(--ink-soft);
+    max-width:56ch;
+    line-height:1.5;
+  }
+
+  .hero-sub strong{
+    color:var(--ink);
+    font-weight:600;
+  }
+
+  /* Skyline visualization */
+  .skyline-wrap{
+    margin-top:clamp(32px,5vw,56px);
+    border-top:1px solid var(--line);
+    padding-top:18px;
+  }
+
+  .skyline-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+
+  .skyline{
+    display:flex;
+    align-items:flex-end;
+    gap:4px;
+    height:150px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    scrollbar-width: thin;
+  }
+
+  .bldg{
+    position:relative;
+    flex:1 0 18px;
+    min-width:14px;
+    max-width:34px;
+    border-radius:2px 2px 0 0;
+    cursor:pointer;
+    transform-origin:bottom;
+    transform:scaleY(0);
+    transition: filter .15s ease, transform .15s ease;
+    outline:none;
+  }
+  .bldg.low{ background:var(--teal); }
+  .bldg.mid{ background:var(--ochre); }
+  .bldg.high{ background:var(--brick); }
+
+  .bldg:hover, .bldg:focus-visible{
+    filter:brightness(1.08);
+    transform: scaleY(1) translateY(-3px);
+  }
+
+  .bldg .tip{
+    position:absolute;
+    bottom:100%;
+    left:50%;
+    transform:translate(-50%, -8px) scale(0.92);
+    background:var(--ink);
+    color:var(--paper-raised);
+    font-size:12px;
+    padding:6px 9px;
+    border-radius:3px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;
+    z-index:5;
+  }
+  .bldg:hover .tip, .bldg:focus-visible .tip{
+    opacity:1;
+    transform:translate(-50%, -12px) scale(1);
+  }
+
+  .skyline-legend{
+    display:flex;
+    gap:18px;
+    margin-top:14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    flex-wrap:wrap;
+  }
+  .skyline-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .swatch{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .swatch.low{ background:var(--teal); }
+  .swatch.mid{ background:var(--ochre); }
+  .swatch.high{ background:var(--brick); }
+
+  /* ---------- CONTROLS ---------- */
+
+  .controls{
+    max-width:1180px;
+    margin:clamp(36px,5vw,56px) auto 0;
+    padding:0 clamp(20px,6vw,72px);
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 28px;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+    padding-bottom:18px;
+  }
+
+  .field{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .field label{
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  select{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:7px 10px;
+    cursor:pointer;
+  }
+
+  .chips{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 14px 6px 12px;
+    cursor:pointer;
+    transition: background .12s ease, color .12s ease, border-color .12s ease;
+  }
+  .chip svg{ width:14px; height:14px; flex:none; }
+  .chip:hover{ border-color:var(--ink-soft); }
+  .chip.active{
+    background:var(--ink);
+    color:var(--paper-raised);
+    border-color:var(--ink);
+  }
+
+  .result-count{
+    margin-left:auto;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- LISTING ---------- */
+
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:6px clamp(20px,6vw,72px) 40px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns: 34px minmax(0,1fr) 250px 175px;
+    align-items:center;
+    gap:22px;
+    padding:20px 4px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    transition: background .15s ease;
+  }
+  .row::before{
+    content:"";
+    position:absolute;
+    left:-14px;
+    top:14px;
+    bottom:14px;
+    width:4px;
+    border-radius:2px;
+    background:var(--tier-color, var(--teal));
+  }
+  .row:hover{ background: rgba(255,255,255,0.55); }
+
+  .row-rank{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row-title{ min-width:0; }
+  .row-address{
+    font-family:'Fraunces', serif;
+    font-size:18px;
+    font-weight:500;
+    line-height:1.25;
+  }
+  .row-barrio{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  .row-barrio svg{ width:12px; height:12px; flex-shrink:0; opacity:.75; }
+
+  .row-badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:10px;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    background:var(--paper-raised);
+    border-radius:20px;
+    padding:3px 10px 3px 8px;
+  }
+  .badge svg{ width:12px; height:12px; flex-shrink:0; color:var(--brick); }
+
+  .row-stats{
+    display:grid;
+    grid-template-columns: repeat(5, minmax(38px,1fr));
+    gap:6px;
+  }
+  .stat{ text-align:left; }
+  .stat-top{
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .stat-top svg{
+    width:15px;
+    height:15px;
+    flex-shrink:0;
+    color: var(--tier-color, var(--teal));
+    opacity:.85;
+  }
+  .stat b{
+    display:block;
+    font-size:15px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .stat span{
+    display:block;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+  .stat.muted b{ color:var(--ink-soft); font-weight:500; }
+  .stat.muted .stat-top svg{ color:var(--ink-soft); opacity:.55; }
+
+  .row-price{
+    text-align:right;
+  }
+  .price-total{
+    white-space:nowrap;
+  }
+  .price-total{
+    font-family:'Fraunces', serif;
+    font-size:21px;
+    font-weight:600;
+  }
+  .price-detail{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+  .price-cta{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    margin-top:9px;
+    font-size:12px;
+    color:var(--teal);
+    transition: gap .15s ease;
+  }
+  .row:hover .price-cta{ gap:7px; }
+  .price-cta svg{ width:13px; height:13px; flex-shrink:0; }
+
+  .empty-state{
+    padding:60px 4px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:15px;
+  }
+
+  footer{
+    max-width:1180px;
+    margin:0 auto;
+    padding:24px clamp(20px,6vw,72px) 50px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+
+  @media (max-width: 760px){
+    .row{
+      grid-template-columns: 1fr;
+      gap:12px;
+      padding:18px 4px 18px 14px;
+    }
+    .row-rank{ display:none; }
+    .row-stats{
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .row-price{ text-align:left; }
+    .controls{ padding-bottom:14px; }
+    .result-count{ margin-left:0; width:100%; order:5; }
+    .skyline-label{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:3px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; scroll-behavior:auto !important; }
+    .bldg{ transform:scaleY(1) !important; }
+  }
+
+  :focus-visible{
+    outline:2px solid var(--brick);
+    outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Lista de departamentos</h1>
+  <p class="hero-sub" id="heroSub">Cargando resumen…</p>
+
+  <div class="skyline-wrap">
+    <div class="skyline-label">
+      <span id="skylineMin">$395.000</span>
+      <span>arriendo total mensual, de menor a mayor</span>
+      <span id="skylineMax">$580.000</span>
+    </div>
+    <div class="skyline" id="skyline" role="list" aria-label="Precios de arriendo de menor a mayor"></div>
+    <div class="skyline-legend">
+      <span><i class="swatch low"></i>tercio más económico</span>
+      <span><i class="swatch mid"></i>tercio medio</span>
+      <span><i class="swatch high"></i>tercio más caro</span>
+    </div>
+  </div>
+</header>
+
+<section class="controls">
+  <div class="field">
+    <label for="sortSelect">Ordenar por</label>
+    <select id="sortSelect">
+      <option value="price-asc">Precio: menor a mayor</option>
+      <option value="price-desc">Precio: mayor a menor</option>
+      <option value="m2-desc">Superficie: mayor a menor</option>
+      <option value="banos-desc">Baños: más a menos</option>
+    </select>
+  </div>
+  <div class="chips" id="chips">
+    <button class="chip" data-filter="bodega"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Con bodega</button>
+    <button class="chip" data-filter="baños2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-2Z"/><path d="M6 12V6a2 2 0 0 1 3-1.7"/><path d="M4 20h16"/></svg>2 baños</button>
+  </div>
+  <span class="result-count" id="resultCount"></span>
+</section>
+
+<main id="listing"></main>
+
+<footer>
+  Recopilación manual de avisos publicados en Portal Inmobiliario, Facebook Marketplace, Houm y Remax. Los precios y datos pueden haber cambiado desde la publicación original — revisa cada aviso antes de contactar. Haz clic en cualquier departamento para abrir el aviso original en una pestaña nueva.
+</footer>
+
+<script>
+  const listings = [
+    { id:1, address:"Emiliano Zapata", barrio:"Dorsal", rent:350000, ggcc:45000, total:395000, dorm:2, banos:1, m2:52, m2Label:"52 m² (50 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-2117574473-comodo-departamento-en-excelentes-barrio-174362-_JM" },
+    { id:2, address:"Av. Perú", barrio:"Cementerios, Recoleta", rent:400000, ggcc:45000, total:445000, dorm:2, banos:1, m2:45, m2Label:"45 m² (42 útiles + 3 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:[], link:"https://www.portalinmobiliario.com/MLC-2225563199-departamento-avenida-peru-id-103980-_JM" },
+    { id:3, address:"Metro Cementerios", barrio:"Recoleta", rent:415000, ggcc:75000, total:490000, dorm:2, banos:1, m2:null, m2Label:"Superficie no indicada", estac:"Sí (algunos)", hasEstac:true, bodega:"Sí (algunos)", hasBodega:true, badges:[], link:"https://www.facebook.com/marketplace/item/1605650117943955/" },
+    { id:4, address:"Santos Dumont 815", barrio:"Recoleta", rent:450000, ggcc:80000, total:530000, dorm:2, banos:1, m2:50, m2Label:"50 m² (47 útiles + 3 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:["Cerca metro Cerro Blanco"], link:"https://www.portalinmobiliario.com/MLC-2116718541-hermoso-dpto-2d1-bano-estac-metro-cerro-blanco-_JM" },
+    { id:5, address:"Santos Dumont 1-300", barrio:"Recoleta", rent:450000, ggcc:80000, total:530000, dorm:2, banos:1, m2:55, m2Label:"55 m²", estac:"Opcional, +$40.000/mes", hasEstac:false, bodega:"No", hasBodega:false, badges:["Remodelado"], link:"https://www.portalinmobiliario.com/MLC-4303584270-departamento-remodelado-en-el-condominio-recoleta-_JM" },
+    { id:6, address:"Av. Recoleta 1259", barrio:"Recoleta", rent:440000, ggcc:90000, total:530000, dorm:2, banos:2, m2:51, m2Label:"51 m² (49 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Metro Cementerios y Cerro Blanco"], link:"https://www.portalinmobiliario.com/MLC-4274000168-luminoso-departamento-metro-cementerios-y-cerro-blanco-_JM" },
+    { id:7, address:"Santos Dumont 750", barrio:"Recoleta", rent:450000, ggcc:85000, total:535000, dorm:2, banos:2, suite:true, m2:57, m2Label:"57 m² (52 útiles + 5 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Dorm. en suite", "Metro Cerro Blanco"], link:"https://www.portalinmobiliario.com/MLC-2111013759-depto-mariposa-en-metro-cerro-blanco-estac-y-bod-_JM" },
+    { id:8, address:"María Graham", barrio:"Recoleta", rent:400000, ggcc:135000, total:535000, dorm:2, banos:2, m2:58, m2Label:"58 m² (53 útiles + 5 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:["Publicado por Houm"], link:"https://houm.com/cl/arriendo-departamento-regio%CC%81n-metropolitana/recoleta/176931" },
+    { id:9, address:"Santa María 571", barrio:"Recoleta", rent:450000, ggcc:90000, total:540000, dorm:2, banos:1, m2:54, m2Label:"54 m² (52 habitables)", estac:"Sí (1)", hasEstac:true, bodega:"No indicada", hasBodega:null, badges:[], link:"https://www.remax.cl/es-cl/propiedades/departamento/arriendo/recoleta/571-santa-maria/1028124013-762" },
+    { id:10, address:"Metro Cerro Blanco", barrio:"Recoleta", rent:450000, ggcc:90000, total:540000, dorm:2, banos:2, m2:56, m2Label:"56 m²", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:[], link:"https://www.remax.cl/es-cl/propiedades/departamento/arriendo/recoleta/1028122004-34" },
+    { id:11, address:"Av. Einstein 568", barrio:"Recoleta", rent:480000, ggcc:null, total:480000, dorm:2, banos:2, m2:57, m2Label:"57 m²", estac:"No informado", hasEstac:null, bodega:"No informada", hasBodega:null, amoblado:true, mascotas:true, badges:["Amoblado", "Acepta mascotas", "Metro Einstein a 99 m", "Piso 3, con ascensor"], link:"https://www.facebook.com/marketplace/item/1334110925467796/" },
+    { id:12, address:"San Cristóbal 471", barrio:"Recoleta", rent:440000, ggcc:108000, total:548000, dorm:2, banos:1, m2:50, m2Label:"50 m² (48 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4179336198-departamento-2d1b-con-estacionamiento-recoleta-_JM" },
+    { id:13, address:"Juárez Larga 621", barrio:"Patronato", rent:450000, ggcc:100000, total:550000, dorm:2, banos:2, suite:true, m2:70, m2Label:"70 m² — el más grande de la lista", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Dorm. en suite", "El más grande"], link:"https://www.portalinmobiliario.com/MLC-2199665455-amplio-y-luminoso-depto-con-estacionamiento-gran-plusvalia-_JM" },
+    { id:14, address:"Santos Dumont 600-900", barrio:"Recoleta", rent:400000, ggcc:150000, total:550000, dorm:2, banos:2, suite:true, m2:55, m2Label:"55 m² (52 útiles + 3 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:["Dorm. en suite", "Último piso"], link:"https://www.portalinmobiliario.com/MLC-2107154721-departamento-2d2b-ultimo-piso-recoleta-_JM" },
+    { id:15, address:"Av. La Paz 477", barrio:"Patronato", rent:430000, ggcc:130000, total:560000, dorm:2, banos:2, m2:50, m2Label:"50 m² (43 útiles)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4433828844-se-arrienda-departamento-2d2b-en-av-la-paz-recoleta-_JM" },
+    { id:16, address:"Av. Santa María 571", barrio:"Patronato", rent:470000, ggcc:90000, total:560000, dorm:2, banos:1, m2:54, m2Label:"54 m² (56 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Frente a Parque Forestal", "Metro Calicanto"], link:"https://www.portalinmobiliario.com/MLC-2120270615-excelente-departamento-frente-a-p-forestal-metro-calicanto-_JM" },
+    { id:17, address:"San Cristóbal / Av. Perú", barrio:"Recoleta", rent:450000, ggcc:115000, total:565000, dorm:2, banos:1, m2:45, m2Label:"45 m²", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:[], link:"https://www.portalinmobiliario.com/MLC-4427326394-san-cristobal-av-peru-_JM" },
+    { id:18, address:"Santos Dumont 1-300", barrio:"Recoleta", rent:450000, ggcc:80000, extra:40000, total:570000, dorm:2, banos:1, m2:55, m2Label:"55 m²", estac:"Con estacionamiento", hasEstac:true, bodega:"No", hasBodega:false, badges:["Remodelado", "Incluye estacionamiento"], link:"https://www.portalinmobiliario.com/MLC-4303584270-departamento-remodelado-en-el-condominio-recoleta-_JM" },
+    { id:19, address:"Loreto 350", barrio:"Patronato", rent:500000, ggcc:75000, total:575000, dorm:2, banos:2, m2:56, m2Label:"56 m²", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Piso 8"], link:"https://www.portalinmobiliario.com/MLC-2215972539-excelente-departamento-2d-2b-piso-8-est-y-bod-_JM" },
+    { id:20, address:"Domínica 411", barrio:"Metro Cerro Blanco, Recoleta", rent:480000, ggcc:100000, total:580000, dorm:2, banos:2, m2:65, m2Label:"65 m² (61 útiles + 4 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4444504704-depto-2-dormitorios-en-dominica-411-metro-cerro-blanco-_JM" },
+    { id:21, address:"Santos Dumont 750", barrio:"Recoleta", rent:500000, ggcc:80000, total:580000, dorm:2, banos:2, m2:55, m2Label:"55 m²", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4450243862-arriendo-departamento-en-recoleta-_JM" },
+  ];
+
+  const fmt = n => n == null ? "—" : "$" + n.toLocaleString("es-CL");
+
+  const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const ICONS = {
+    bed: svg(`<path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18v2"/><path d="M21 18v2"/><path d="M3 12V8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M13 10h6"/>`),
+    bath: svg(`<path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-2Z"/><path d="M6 12V6a2 2 0 0 1 3-1.7"/><path d="M4 20h16"/>`),
+    ruler: svg(`<path d="M3 8V3h5"/><path d="M21 16v5h-5"/><path d="M3 3l7 7"/><path d="M21 21l-7-7"/>`),
+    car: svg(`<path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M3 11h18v5a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5Z"/><circle cx="7.5" cy="16" r="1.1"/><circle cx="16.5" cy="16" r="1.1"/>`),
+    box: svg(`<path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>`),
+    pin: svg(`<path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/>`),
+    sofa: svg(`<path d="M4 12V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M3 12h18v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4Z"/><path d="M5 18v2"/><path d="M19 18v2"/>`),
+    paw: svg(`<circle cx="7" cy="8" r="1.4"/><circle cx="12" cy="6" r="1.4"/><circle cx="17" cy="8" r="1.4"/><path d="M8 15c0-2.4 1.8-3.8 4-3.8s4 1.4 4 3.8-1.9 3.3-4 3.3-4-.9-4-3.3Z"/>`),
+    layers: svg(`<path d="M12 3l9 5-9 5-9-5 9-5Z"/><path d="M3 13l9 5 9-5"/>`),
+    tree: svg(`<path d="M12 3l4 6h-2l4 6h-3v6h-6v-6H6l4-6H8l4-6Z"/>`),
+    sparkle: svg(`<path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6L12 2Z"/>`),
+    star: svg(`<path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3-4.8-4.3 6.4-.6L12 3Z"/>`),
+    link: svg(`<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/>`),
+  };
+
+  function badgeIcon(text){
+    const t = text.toLowerCase();
+    if (t.includes("metro") || t.includes("cerca")) return ICONS.pin;
+    if (t.includes("amoblado")) return ICONS.sofa;
+    if (t.includes("mascota")) return ICONS.paw;
+    if (t.includes("piso") || t.includes("ascensor")) return ICONS.layers;
+    if (t.includes("parque")) return ICONS.tree;
+    if (t.includes("más grande")) return ICONS.star;
+    if (t.includes("suite")) return ICONS.bed;
+    return ICONS.sparkle;
+  }
+
+  // ---- Hero summary + skyline ----
+  const prices = listings.map(l => l.total).sort((a,b)=>a-b);
+  const min = prices[0], max = prices[prices.length-1];
+  const avg = Math.round(prices.reduce((a,b)=>a+b,0) / prices.length);
+  const avgM2 = Math.round(listings.filter(l=>l.m2).reduce((a,l)=>a+l.m2,0) / listings.filter(l=>l.m2).length);
+
+  document.getElementById("heroSub").innerHTML =
+    `Entre <strong>${fmt(min)}</strong> y <strong>${fmt(max)}</strong> al mes, con un promedio de <strong>${fmt(avg)}</strong>. ` +
+    `Todos tienen 2 dormitorios; la superficie promedio ronda los <strong>${avgM2} m²</strong>. ` +
+    `Recorre la ciudad de precios de abajo o filtra la lista por lo que más te importa.`;
+  document.getElementById("skylineMin").textContent = fmt(min);
+  document.getElementById("skylineMax").textContent = fmt(max);
+
+  const sortedForSkyline = [...listings].sort((a,b)=>a.total-b.total);
+  const skylineEl = document.getElementById("skyline");
+  sortedForSkyline.forEach((l, i) => {
+    const pct = 22 + ((l.total - min) / (max - min || 1)) * 78;
+    const tier = i < listings.length/3 ? "low" : i < (listings.length*2/3) ? "mid" : "high";
+    const b = document.createElement("a");
+    b.href = l.link;
+    b.target = "_blank";
+    b.rel = "noopener";
+    b.className = "bldg " + tier;
+    b.style.height = pct + "%";
+    b.setAttribute("role","listitem");
+    b.setAttribute("aria-label", `${l.address}, ${fmt(l.total)} al mes`);
+    b.innerHTML = `<span class="tip">${l.address} · ${fmt(l.total)}</span>`;
+    skylineEl.appendChild(b);
+    requestAnimationFrame(() => {
+      setTimeout(() => { b.style.transform = "scaleY(1)"; }, 30 * i);
+    });
+  });
+
+  // ---- List rendering ----
+  const listingEl = document.getElementById("listing");
+  const resultCountEl = document.getElementById("resultCount");
+  const activeFilters = new Set();
+  let sortMode = "price-asc";
+
+  function tierColor(total){
+    const idx = prices.indexOf(total);
+    if (idx < prices.length/3) return "var(--teal)";
+    if (idx < prices.length*2/3) return "var(--ochre)";
+    return "var(--brick)";
+  }
+
+  function passesFilters(l){
+    if (activeFilters.has("bodega") && !l.hasBodega) return false;
+    if (activeFilters.has("baños2") && l.banos !== 2) return false;
+    return true;
+  }
+
+  function sortList(arr){
+    const a = [...arr];
+    if (sortMode === "price-asc") a.sort((x,y)=>x.total-y.total);
+    if (sortMode === "price-desc") a.sort((x,y)=>y.total-x.total);
+    if (sortMode === "m2-desc") a.sort((x,y)=>(y.m2||0)-(x.m2||0));
+    if (sortMode === "banos-desc") a.sort((x,y)=>y.banos-x.banos || x.total-y.total);
+    return a;
+  }
+
+  function render(){
+    const filtered = sortList(listings.filter(passesFilters));
+    resultCountEl.textContent = `${filtered.length} de ${listings.length} departamentos`;
+    listingEl.innerHTML = "";
+
+    if (filtered.length === 0){
+      listingEl.innerHTML = `<div class="empty-state">Ningún departamento cumple esos filtros a la vez. Prueba quitando uno.</div>`;
+      return;
+    }
+
+    filtered.forEach((l, i) => {
+      const row = document.createElement("a");
+      row.href = l.link;
+      row.target = "_blank";
+      row.rel = "noopener";
+      row.className = "row";
+      row.style.setProperty("--tier-color", tierColor(l.total));
+
+      const detailParts = [`Arriendo ${fmt(l.rent)} + GGCC ${l.ggcc ? fmt(l.ggcc) : "no informados"}`];
+      if (l.extra) detailParts.push(`+ ${fmt(l.extra)} estacionamiento`);
+
+      row.innerHTML = `
+        <span class="row-rank">${String(i+1).padStart(2,"0")}</span>
+        <span class="row-title">
+          <span class="row-address">${l.address}</span>
+          <span class="row-barrio">${ICONS.pin}${l.barrio}</span>
+        </span>
+        <span class="row-stats">
+          <span class="stat"><span class="stat-top">${ICONS.bed}<b>${l.dorm}</b></span><span>dorm.</span></span>
+          <span class="stat"><span class="stat-top">${ICONS.bath}<b>${l.banos}</b></span><span>baño${l.banos>1?"s":""}</span></span>
+          <span class="stat ${l.m2 ? "" : "muted"}"><span class="stat-top">${ICONS.ruler}<b>${l.m2 ? l.m2+" m²" : "s/d"}</b></span><span>superficie</span></span>
+          <span class="stat ${l.hasEstac===false ? "muted":""}"><span class="stat-top">${ICONS.car}<b>${l.hasEstac===true?"Sí":l.hasEstac===false?"Opc.":"s/i"}</b></span><span>estac.</span></span>
+          <span class="stat ${l.hasBodega ? "" : "muted"}"><span class="stat-top">${ICONS.box}<b>${l.hasBodega===true?"Sí":l.hasBodega===false?"No":"s/i"}</b></span><span>bodega</span></span>
+        </span>
+        <span class="row-price">
+          <span class="price-total">${fmt(l.total)}</span>
+          <span class="price-detail">${detailParts.join(" ")}</span>
+          <span class="price-cta">${ICONS.link}Ver aviso original</span>
+        </span>
+      `;
+      listingEl.appendChild(row);
+    });
+  }
+
+  document.getElementById("sortSelect").addEventListener("change", e => {
+    sortMode = e.target.value;
+    render();
+  });
+
+  document.querySelectorAll(".chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const f = chip.dataset.filter;
+      if (activeFilters.has(f)){ activeFilters.delete(f); chip.classList.remove("active"); }
+      else { activeFilters.add(f); chip.classList.add("active"); }
+      render();
+    });
+  });
+
+  render();
+</script>
+
+</body>
+</html>
