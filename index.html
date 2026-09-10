@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>21 departamentos en Recoleta y Patronato</title>
+<title>Arriendos Eli</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -411,7 +411,7 @@
 <body>
 
 <header class="hero">
-  <h1>Lista de departamentos</h1>
+  <h1 id="mainTitle">Posibles arriendos para Eli</h1>
   <p class="hero-sub" id="heroSub">Cargando resumen…</p>
 
   <div class="skyline-wrap">
@@ -449,29 +449,21 @@
 <main id="listing"></main>
 
 <footer>
-  Recopilación manual de avisos publicados en Portal Inmobiliario, Facebook Marketplace, Houm y Remax. Los precios y datos pueden haber cambiado desde la publicación original — revisa cada aviso antes de contactar. Haz clic en cualquier departamento para abrir el aviso original en una pestaña nueva.
+
 </footer>
 
 <script>
   const listings = [
-    { id:1, address:"Emiliano Zapata", barrio:"Dorsal", rent:350000, ggcc:45000, total:395000, dorm:2, banos:1, m2:52, m2Label:"52 m² (50 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-2117574473-comodo-departamento-en-excelentes-barrio-174362-_JM" },
-    { id:2, address:"Av. Perú", barrio:"Cementerios, Recoleta", rent:400000, ggcc:45000, total:445000, dorm:2, banos:1, m2:45, m2Label:"45 m² (42 útiles + 3 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:[], link:"https://www.portalinmobiliario.com/MLC-2225563199-departamento-avenida-peru-id-103980-_JM" },
     { id:3, address:"Metro Cementerios", barrio:"Recoleta", rent:415000, ggcc:75000, total:490000, dorm:2, banos:1, m2:null, m2Label:"Superficie no indicada", estac:"Sí (algunos)", hasEstac:true, bodega:"Sí (algunos)", hasBodega:true, badges:[], link:"https://www.facebook.com/marketplace/item/1605650117943955/" },
     { id:4, address:"Santos Dumont 815", barrio:"Recoleta", rent:450000, ggcc:80000, total:530000, dorm:2, banos:1, m2:50, m2Label:"50 m² (47 útiles + 3 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:["Cerca metro Cerro Blanco"], link:"https://www.portalinmobiliario.com/MLC-2116718541-hermoso-dpto-2d1-bano-estac-metro-cerro-blanco-_JM" },
     { id:5, address:"Santos Dumont 1-300", barrio:"Recoleta", rent:450000, ggcc:80000, total:530000, dorm:2, banos:1, m2:55, m2Label:"55 m²", estac:"Opcional, +$40.000/mes", hasEstac:false, bodega:"No", hasBodega:false, badges:["Remodelado"], link:"https://www.portalinmobiliario.com/MLC-4303584270-departamento-remodelado-en-el-condominio-recoleta-_JM" },
-    { id:6, address:"Av. Recoleta 1259", barrio:"Recoleta", rent:440000, ggcc:90000, total:530000, dorm:2, banos:2, m2:51, m2Label:"51 m² (49 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Metro Cementerios y Cerro Blanco"], link:"https://www.portalinmobiliario.com/MLC-4274000168-luminoso-departamento-metro-cementerios-y-cerro-blanco-_JM" },
-    { id:7, address:"Santos Dumont 750", barrio:"Recoleta", rent:450000, ggcc:85000, total:535000, dorm:2, banos:2, suite:true, m2:57, m2Label:"57 m² (52 útiles + 5 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Dorm. en suite", "Metro Cerro Blanco"], link:"https://www.portalinmobiliario.com/MLC-2111013759-depto-mariposa-en-metro-cerro-blanco-estac-y-bod-_JM" },
-    { id:8, address:"María Graham", barrio:"Recoleta", rent:400000, ggcc:135000, total:535000, dorm:2, banos:2, m2:58, m2Label:"58 m² (53 útiles + 5 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:["Publicado por Houm"], link:"https://houm.com/cl/arriendo-departamento-regio%CC%81n-metropolitana/recoleta/176931" },
-    { id:9, address:"Santa María 571", barrio:"Recoleta", rent:450000, ggcc:90000, total:540000, dorm:2, banos:1, m2:54, m2Label:"54 m² (52 habitables)", estac:"Sí (1)", hasEstac:true, bodega:"No indicada", hasBodega:null, badges:[], link:"https://www.remax.cl/es-cl/propiedades/departamento/arriendo/recoleta/571-santa-maria/1028124013-762" },
     { id:10, address:"Metro Cerro Blanco", barrio:"Recoleta", rent:450000, ggcc:90000, total:540000, dorm:2, banos:2, m2:56, m2Label:"56 m²", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:[], link:"https://www.remax.cl/es-cl/propiedades/departamento/arriendo/recoleta/1028122004-34" },
     { id:11, address:"Av. Einstein 568", barrio:"Recoleta", rent:480000, ggcc:null, total:480000, dorm:2, banos:2, m2:57, m2Label:"57 m²", estac:"No informado", hasEstac:null, bodega:"No informada", hasBodega:null, amoblado:true, mascotas:true, badges:["Amoblado", "Acepta mascotas", "Metro Einstein a 99 m", "Piso 3, con ascensor"], link:"https://www.facebook.com/marketplace/item/1334110925467796/" },
     { id:12, address:"San Cristóbal 471", barrio:"Recoleta", rent:440000, ggcc:108000, total:548000, dorm:2, banos:1, m2:50, m2Label:"50 m² (48 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4179336198-departamento-2d1b-con-estacionamiento-recoleta-_JM" },
     { id:13, address:"Juárez Larga 621", barrio:"Patronato", rent:450000, ggcc:100000, total:550000, dorm:2, banos:2, suite:true, m2:70, m2Label:"70 m² — el más grande de la lista", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Dorm. en suite", "El más grande"], link:"https://www.portalinmobiliario.com/MLC-2199665455-amplio-y-luminoso-depto-con-estacionamiento-gran-plusvalia-_JM" },
-    { id:14, address:"Santos Dumont 600-900", barrio:"Recoleta", rent:400000, ggcc:150000, total:550000, dorm:2, banos:2, suite:true, m2:55, m2Label:"55 m² (52 útiles + 3 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:["Dorm. en suite", "Último piso"], link:"https://www.portalinmobiliario.com/MLC-2107154721-departamento-2d2b-ultimo-piso-recoleta-_JM" },
     { id:15, address:"Av. La Paz 477", barrio:"Patronato", rent:430000, ggcc:130000, total:560000, dorm:2, banos:2, m2:50, m2Label:"50 m² (43 útiles)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4433828844-se-arrienda-departamento-2d2b-en-av-la-paz-recoleta-_JM" },
     { id:16, address:"Av. Santa María 571", barrio:"Patronato", rent:470000, ggcc:90000, total:560000, dorm:2, banos:1, m2:54, m2Label:"54 m² (56 útiles + 2 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Frente a Parque Forestal", "Metro Calicanto"], link:"https://www.portalinmobiliario.com/MLC-2120270615-excelente-departamento-frente-a-p-forestal-metro-calicanto-_JM" },
     { id:17, address:"San Cristóbal / Av. Perú", barrio:"Recoleta", rent:450000, ggcc:115000, total:565000, dorm:2, banos:1, m2:45, m2Label:"45 m²", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:[], link:"https://www.portalinmobiliario.com/MLC-4427326394-san-cristobal-av-peru-_JM" },
-    { id:18, address:"Santos Dumont 1-300", barrio:"Recoleta", rent:450000, ggcc:80000, extra:40000, total:570000, dorm:2, banos:1, m2:55, m2Label:"55 m²", estac:"Con estacionamiento", hasEstac:true, bodega:"No", hasBodega:false, badges:["Remodelado", "Incluye estacionamiento"], link:"https://www.portalinmobiliario.com/MLC-4303584270-departamento-remodelado-en-el-condominio-recoleta-_JM" },
     { id:19, address:"Loreto 350", barrio:"Patronato", rent:500000, ggcc:75000, total:575000, dorm:2, banos:2, m2:56, m2Label:"56 m²", estac:"Sí (1)", hasEstac:true, bodega:"1", hasBodega:true, badges:["Piso 8"], link:"https://www.portalinmobiliario.com/MLC-2215972539-excelente-departamento-2d-2b-piso-8-est-y-bod-_JM" },
     { id:20, address:"Domínica 411", barrio:"Metro Cerro Blanco, Recoleta", rent:480000, ggcc:100000, total:580000, dorm:2, banos:2, m2:65, m2Label:"65 m² (61 útiles + 4 terraza)", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4444504704-depto-2-dormitorios-en-dominica-411-metro-cerro-blanco-_JM" },
     { id:21, address:"Santos Dumont 750", barrio:"Recoleta", rent:500000, ggcc:80000, total:580000, dorm:2, banos:2, m2:55, m2Label:"55 m²", estac:"Sí (1)", hasEstac:true, bodega:"No", hasBodega:false, badges:[], link:"https://www.portalinmobiliario.com/MLC-4450243862-arriendo-departamento-en-recoleta-_JM" },
@@ -514,6 +506,8 @@
   const avg = Math.round(prices.reduce((a,b)=>a+b,0) / prices.length);
   const avgM2 = Math.round(listings.filter(l=>l.m2).reduce((a,l)=>a+l.m2,0) / listings.filter(l=>l.m2).length);
 
+  document.title = `${listings.length} departamentos en Recoleta y Patronato`;
+  document.getElementById("mainTitle").textContent = `${listings.length} departamentos para arrendar, ordenados por precio`;
   document.getElementById("heroSub").innerHTML =
     `Entre <strong>${fmt(min)}</strong> y <strong>${fmt(max)}</strong> al mes, con un promedio de <strong>${fmt(avg)}</strong>. ` +
     `Todos tienen 2 dormitorios; la superficie promedio ronda los <strong>${avgM2} m²</strong>. ` +
